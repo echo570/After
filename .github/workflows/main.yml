@@ -5,16 +5,15 @@ on:
 
 jobs:
   build:
-    name: Start Building...
     runs-on: windows-latest
     timeout-minutes: 360
-    
+
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-        with:
-          repository: raposabrty/pcrdp
-          path: temp  # clone into temp folder
+      - name: Install Git
+        run: git --version || choco install git
+
+      - name: Clone GitLab repo
+        run: git clone https://gitlab.com/raposabrty/pcrdp temp
 
       - name: Run Downloads.bat
         run: cmd /c temp/Downloads.bat
