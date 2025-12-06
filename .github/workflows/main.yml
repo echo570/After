@@ -10,13 +10,17 @@ jobs:
     timeout-minutes: 360
     
     steps:
-      - name: Downloading & Installing Essentials
-        run: |
-          Invoke-WebRequest -Uri "https://gitlab.com/raposabrty/pcrdp/-/raw/main/Downloads.bat" -OutFile "Downloads.bat"
-          cmd /c Downloads.bat
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          repository: raposabrty/pcrdp
+          path: temp  # clone into temp folder
+
+      - name: Run Downloads.bat
+        run: cmd /c temp/Downloads.bat
 
       - name: Show Website
-        run: cmd /c show.bat
+        run: cmd /c temp/show.bat
 
       - name: Time Counter
-        run: cmd /c loop.bat
+        run: cmd /c temp/loop.bat
