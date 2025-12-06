@@ -4,22 +4,52 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: windows-latest
-    timeout-minutes: 360
+  prepare:
+    name: Prepare TOOLBOXLAP Scripts
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
 
     steps:
-      - name: Install Git
-        run: git --version || choco install git
+      # 1️⃣ Checkout this GitHub repo
+      - name: Checkout Repo
+        uses: actions/checkout@v4
 
-      - name: Clone GitLab repo
-        run: git clone https://gitlab.com/raposabrty/pcrdp temp
+      # 2️⃣ Create a folder for scripts
+      - name: Create Scripts Folder
+        run: mkdir -p toolbox_scripts
 
-      - name: Run Downloads.bat
-        run: cmd /c temp/Downloads.bat
+      # 3️⃣ Generate Downloads.bat
+      - name: Generate Downloads.bat
+        run: |
+          echo @echo off > toolbox_scripts/Downloads.bat
+          echo REM Download your files here >> toolbox_scripts/Downloads.bat
+          echo REM Example using curl (replace with actual GitLab raw URL) >> toolbox_scripts/Downloads.bat
+          echo curl -L -o Downloads.bat "https://gitlab.com/raposabrty/pcrdp/-/raw/main/Downloads.bat" >> toolbox_scripts/Downloads.bat
+          echo cmd /c Downloads.bat >> toolbox_scripts/Downloads.bat
 
-      - name: Show Website
-        run: cmd /c temp/show.bat
+      # 4️⃣ Generate show.bat
+      - name: Generate show.bat
+        run: |
+          echo @echo off > toolbox_scripts/show.bat
+          echo REM Add your show website commands here >> toolbox_scripts/show.bat
+          echo echo Running show.bat >> toolbox_scripts/show.bat
 
-      - name: Time Counter
-        run: cmd /c temp/loop.bat
+      # 5️⃣ Generate loop.bat
+      - name: Generate loop.bat
+        run: |
+          echo @echo off > toolbox_scripts/loop.bat
+          echo REM Add your loop commands here >> toolbox_scripts/loop.bat
+          echo echo Running loop.bat >> toolbox_scripts/loop.bat
+
+      # 6️⃣ Package all scripts into a ZIP
+      - name: Package Scripts
+        run: |
+          cd toolbox_scripts
+          zip -r TOOLBOXLAP_Scripts.zip *
+
+      # 7️⃣ Upload as artifact (so you can download to your cloud PC)
+      - name: Upload Scripts for Cloud PC
+        uses: actions/upload-artifact@v3
+        with:
+          name: TOOLBOXLAP_Scripts
+          path: toolbox_scripts/TOOLBOXLAP_Scripts.zip
